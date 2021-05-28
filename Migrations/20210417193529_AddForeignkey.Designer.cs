@@ -4,38 +4,22 @@ using ChurchDatabaseAPI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ChurchDatabaseAPI.Migrations
 {
     [DbContext(typeof(ApplicationDatabaseContext))]
-    partial class ApplicationDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20210417193529_AddForeignkey")]
+    partial class AddForeignkey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("ChurchDatabaseAPI.Model.Attendance", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("EventDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Attendance");
-                });
 
             modelBuilder.Entity("ChurchDatabaseAPI.Model.Image", b =>
                 {
@@ -60,8 +44,6 @@ namespace ChurchDatabaseAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ImageForeignKey");
 
                     b.ToTable("Image");
                 });
@@ -189,7 +171,8 @@ namespace ChurchDatabaseAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ImageForeignKey");
+                    b.HasIndex("ImageForeignKey")
+                        .IsUnique();
 
                     b.ToTable("Membership");
                 });
@@ -241,18 +224,11 @@ namespace ChurchDatabaseAPI.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("ChurchDatabaseAPI.Model.Image", b =>
-                {
-                    b.HasOne("ChurchDatabaseAPI.Model.Membership", "Membership")
-                        .WithMany()
-                        .HasForeignKey("ImageForeignKey");
-                });
-
             modelBuilder.Entity("ChurchDatabaseAPI.Model.Membership", b =>
                 {
                     b.HasOne("ChurchDatabaseAPI.Model.Image", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageForeignKey")
+                        .WithOne("Membership")
+                        .HasForeignKey("ChurchDatabaseAPI.Model.Membership", "ImageForeignKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

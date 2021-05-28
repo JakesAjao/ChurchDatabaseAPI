@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ChurchDatabaseAPI.Model;
+using ChurchDatabaseAPI.Response;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,8 +23,17 @@ namespace ChurchDatabaseAPI.Controllers
             _context = context;
         }
         [HttpPost("uploadphoto")]
-        public String UploadFile([FromForm]IFormFile file)
+        [EnableCors("AllowAllHeaders")]
+        public UploadResponseData UploadFile([FromForm]IFormFile file)
         {
+            UploadResponseData rspData = new UploadResponseData();
+            if (file == null)
+            {
+                rspData.ImageId = -1; //
+                rspData.Status = false; //
+                rspData.Message = "Empty file input."; //
+                return rspData;
+            }
             Image img = new Image();
             try
             {
@@ -39,22 +49,33 @@ namespace ChurchDatabaseAPI.Controllers
                 imgdata.CreatedDate = DateTime.UtcNow;
                 _context.Image.Add(imgdata);
                 _context.SaveChanges();
+                rspData.ImageId  = imgdata.Id; //
+                rspData.Status = true; //
+                rspData.Message = "Upload successful."; //
 
-                int id = imgdata.Id; // Yes it's here
-
-                return Convert.ToString(id);
+                return rspData;
             }
             catch (Exception e)
             {
-                img.Id = -1;
-                img.Message = "Image Could Not Be uploaded. Error: " + e.ToString();
-                return Convert.ToString(-1);
+                rspData.ImageId = -1; //
+                rspData.Status = false; //
+                rspData.Message = "Upload failed. Error: " + e.ToString();
+                return rspData;
             }
         }
         [HttpPost("updatephoto")]
-        public String UpdateFile([FromForm]IFormFile file, [FromForm]String imageId)
+        [EnableCors("AllowAllHeaders")]
+        public UploadResponseData UpdateFile([FromForm]IFormFile file, [FromForm]String imageId)
         {
             Image img = new Image();
+            UploadResponseData rspData = new UploadResponseData();
+            if (file == null)
+            {
+                rspData.ImageId = -1; //
+                rspData.Status = false; //
+                rspData.Message = "Empty file input."; //
+                return rspData;
+            }
             try
             {
                 //string obj = string.Parse(imageId);
@@ -74,15 +95,18 @@ namespace ChurchDatabaseAPI.Controllers
                     result.CreatedDate = DateTime.UtcNow;
                     _context.SaveChanges();
                 }
-                int id = imgdata.Id; // Yes it's here
+                rspData.ImageId = imgdata.Id; //
+                rspData.Status = true; //
+                rspData.Message = "Image Successfully updated."; //
 
-                return Convert.ToString(id);
+                return rspData;
             }
             catch (Exception e)
             {
-                img.Id = -1;
-                img.Message = "Image Could Not Be Updated. Error: " + e.ToString();
-                return Convert.ToString(-1);
+                rspData.ImageId = -1; //
+                rspData.Status = false; //
+                rspData.Message = "Image updated failed. Exception: "+e.ToString(); //
+                return rspData;
             }
         }
     }

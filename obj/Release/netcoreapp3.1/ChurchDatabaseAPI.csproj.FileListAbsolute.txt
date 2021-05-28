@@ -156,3 +156,4 @@ C:\Projects\ChurchDatabaseAPI\obj\Release\netcoreapp3.1\ChurchDatabaseAPI.pdb
 C:\Projects\ChurchDatabaseAPI\obj\Release\netcoreapp3.1\ChurchDatabaseAPI.genruntimeconfig.cache
 C:\Projects\ChurchDatabaseAPI\bin\Release\netcoreapp3.1\System.Net.Http.Formatting.dll
 C:\Projects\ChurchDatabaseAPI\bin\Release\netcoreapp3.1\System.Web.Http.dll
+C:\Projects\ChurchDatabaseAPI\obj\Release\netcoreapp3.1\ChurchDatabaseAPI.csprojAssemblyReference.cache

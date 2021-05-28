@@ -459,3 +459,4 @@ C:\Projects\ChurchDatabaseAPI\obj\Debug\netcoreapp3.1\scopedcss\bundle\ChurchDat
 C:\Projects\ChurchDatabaseAPI\obj\Debug\netcoreapp3.1\ChurchDatabaseAPI.genruntimeconfig.cache
 C:\Projects\ChurchDatabaseAPI\bin\Debug\netcoreapp3.1\System.Net.Http.Formatting.dll
 C:\Projects\ChurchDatabaseAPI\bin\Debug\netcoreapp3.1\System.Web.Http.dll
+C:\Projects\ChurchDatabaseAPI\obj\Debug\netcoreapp3.1\ChurchDatabaseAPI.csprojAssemblyReference.cache

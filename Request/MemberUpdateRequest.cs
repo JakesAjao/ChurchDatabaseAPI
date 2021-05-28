@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChurchDatabaseAPI.Model
+namespace ChurchDatabaseAPI.Request
 {
-    public class MemberRequest
+    public class MemberUpdateRequest
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
@@ -17,7 +16,6 @@ namespace ChurchDatabaseAPI.Model
         public string Status { get; set; }
         public string MobilePhone1 { get; set; }
         public string MobilePhone2 { get; set; }
-
         public string HomePhone { get; set; }
         public string EmailAddress { get; set; }
         public string Address { get; set; }
@@ -28,17 +26,9 @@ namespace ChurchDatabaseAPI.Model
         public string Profession { get; set; }
         public string PrayerRequest { get; set; }
         public string SendNewLetter { get; set; }
-        [ForeignKey("ImageForeignKey")]
-        public Image Image { get; set; }
         public int ImageForeignKey { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Member { get; set; }
         public string Interest { get; set; }
-    }
-    public class MemberFilter
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string MiddleName { get; set; }
     }
 }

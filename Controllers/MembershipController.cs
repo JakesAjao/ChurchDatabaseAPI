@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using ChurchDatabaseAPI.DAO;
 using ChurchDatabaseAPI.Model;
+using ChurchDatabaseAPI.Request;
+using ChurchDatabaseAPI.Response;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,18 +36,11 @@ namespace ChurchDatabaseAPI.Controllers
         {
             _context = context;
         }
-        // GET: api/Membership Details
 
-        //[EnableCors("AllowAllHeaders")]
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<Membership>>> MembershipDetails()
-        //{
-        //    return await _context.Membership.ToListAsync();
-        //}
         //GET: api/Membership
         [HttpGet("memberdetails")]
-        [EnableCors("AllowAllHeaders")]       
-        public async Task<ActionResult<IEnumerable<Membership>>> MemberDetails()
+        [EnableCors("AllowAllHeaders")]
+        public async Task<ActionResult<IEnumerable<MemberRequest>>> MemberDetails()
         {
             return await _context.Membership.ToListAsync();
         }
@@ -103,11 +98,13 @@ namespace ChurchDatabaseAPI.Controllers
             return null;
         }
         [HttpPost("addmember")]
-        public string AddMember(Membership membershipData)
+        [EnableCors("AllowAllHeaders")]
+        public AddMemberResponse AddMember(MemberRequest membershipData)
         {
+            AddMemberResponse response = new AddMemberResponse();
             try
             {
-                Membership member = new Membership();
+                MemberRequest member = new MemberRequest();
                // Membership membershipData = JsonConvert.DeserializeObject<Membership>(membershipRequest);
                 Console.WriteLine(membershipData.Address);
                 member.Address = membershipData.Address;
@@ -138,18 +135,31 @@ namespace ChurchDatabaseAPI.Controllers
 
                 _context.Membership.Add(member);
                 _context.SaveChanges();
-                //membershipData.Message = "Member Created Successfully.";
                 int id = member.Id; // Yes it's here
                 Console.WriteLine(id);
+
                 if (id > 0)
-                    return "Member Created Successfully.";
+                {
+                    response.Status = true;
+                    response.Message = "Member Created Successfully.";
+                    response.MemberId = id;
+
+                    return response;
+                }
+                response.Status = false;
+                response.Message = "Member Could Not Be Added.";
+                response.MemberId = id;
+
+                return response;
             }
             catch (Exception e)
             {
-                return e.Message;
-            }
+                response.Status = false;
+                response.Message = "Member could not be added. Exception: " + e.ToString();
+                response.MemberId = -1;
 
-            return "Member could not be added.";
+                return response;
+            }
         }
         [HttpGet("getgendertotal")]
         [EnableCors("AllowAllHeaders")]
@@ -189,7 +199,7 @@ namespace ChurchDatabaseAPI.Controllers
         }
         [HttpPost("filtermember")]
         [EnableCors("AllowAllHeaders")]
-        public async Task<ActionResult<IEnumerable<Membership>>> GetMemberByStartEndDate(DateFilter datefilter)
+        public async Task<ActionResult<IEnumerable<MemberRequest>>> GetMemberByStartEndDate(DateFilter datefilter)
         {
             try
             {
@@ -239,7 +249,7 @@ namespace ChurchDatabaseAPI.Controllers
         }
         [HttpPut("{id}")]
         [EnableCors("AllowAllHeaders")]
-        public async Task<IActionResult> PutMember(int id, Membership member)
+        public async Task<IActionResult> PutMember(int id, MemberRequest member)
         {
             if (id != member.Id)
             {
@@ -273,7 +283,7 @@ namespace ChurchDatabaseAPI.Controllers
         [EnableCors("AllowAllHeaders")]
         public bool ValidateEmail(String email)
         {
-            Membership myUser = _context.Membership.FirstOrDefault
+            MemberRequest myUser = _context.Membership.FirstOrDefault
               (u => u.EmailAddress.Equals(email));
 
             if (myUser != null)
@@ -286,7 +296,8 @@ namespace ChurchDatabaseAPI.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Membership>> DeleteMember(int id)
+        [EnableCors("AllowAllHeaders")]
+        public async Task<ActionResult<MemberRequest>> DeleteMember(int id)
         {
             var member = await _context.Membership.FindAsync(id);
             if (member == null)
@@ -358,13 +369,16 @@ namespace ChurchDatabaseAPI.Controllers
         //}
         [HttpPost("updatemember")]
         [EnableCors("AllowAllHeaders")]
-        public Membership UpdateMember([FromForm]String memberData)
+        public AddMemberResponse UpdateMember(MemberRequest member)
         {
-            Membership member = JsonConvert.DeserializeObject<Membership>(memberData);
+            MemberRequest memberObj = new MemberRequest();//JsonConvert.DeserializeObject<Membership>(memberData);
+            AddMemberResponse response = new AddMemberResponse();
             if (!MemberExists(member.Id))
             {
-                //member.Message = "Not Found";
-                return member;
+                response.Status = false;
+                response.Message = "Member does not exist.";
+                response.MemberId = member.Id;
+                return response;
             }
             if (member.MobilePhone1 != null)
             {
@@ -426,26 +440,23 @@ namespace ChurchDatabaseAPI.Controllers
             {
                 _context.Entry(member).Property(x => x.WeddingAnniversary).IsModified = true;
             }
-
+            //_context.Entry(member).Property(x => x.Image).IsModified = false; // we didn't change the Foreign Key
+            _context.Entry(member).Reference(x => x.Image).IsModified = false; 
             try
             {
                 _context.SaveChanges();
-                //member.Message = "Successfully updated";
-                return member;
+                response.Status = true;
+                response.Message = "Member updated successfully!";
+                response.MemberId = member.Id;
+                return response;
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException e)
             {
-                if (!MemberExists(member.Id))
-                {
-                    // member.Message = "NotFound";
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            //member.Message = "No Content";
-            return member;
+                response.Status = false;
+                response.Message = "Exception: "+e;
+                response.MemberId = member.Id;
+                return response;
+            }           
         }
         [HttpGet("validate/mobilephone={mobilephone}")]
         [EnableCors("AllowAllHeaders")]
@@ -463,7 +474,7 @@ namespace ChurchDatabaseAPI.Controllers
         }
         [HttpGet("id={id}")]
         [EnableCors("AllowAllHeaders")]
-        public async Task<ActionResult<Membership>> GetMember(string id)
+        public async Task<ActionResult<MemberRequest>> GetMember(string id)
         {
             long Id = Convert.ToInt64(id);
             var member = _context.Membership.First(a => a.Id == Id);
