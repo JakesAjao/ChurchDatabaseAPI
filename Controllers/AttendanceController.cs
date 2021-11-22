@@ -35,16 +35,14 @@ namespace ChurchDatabaseAPI.Controllers
             AddMemberResponse response = new AddMemberResponse();
             try
             {
-                Attendance member = new Attendance();
-                // Membership membershipData = JsonConvert.DeserializeObject<Membership>(membershipRequest);
-                Console.WriteLine(attendaceData.Status);
-                member.Status = attendaceData.Status;
-                member.Id = attendaceData.Id;
-                member.EventDate = DateTime.Now.ToString();
+                Attendance attend = new Attendance();
+                attend.Status = attendaceData.Status;
+                attend.MemberId = attendaceData.MemberId;
+                attend.EventDate = attendaceData.EventDate;
 
-                _context.Attendance.Add(member);
+                _context.Attendance.Add(attend);
                 _context.SaveChanges();
-                int id = member.Id; // Yes it's here
+                int id = attend.Id; // Yes it's here
                 Console.WriteLine(id);
 
                 if (id > 0)
@@ -64,47 +62,47 @@ namespace ChurchDatabaseAPI.Controllers
             catch (Exception e)
             {
                 response.Status = false;
-                response.Message = "Attendance could not be added. Exception: " + e.ToString();
+                response.Message = "Attendance could not be added. ";
                 response.MemberId = -1;
+                response.Exception = e.ToString();
 
                 return response;
             }
         }
         [HttpPost("update")]
         [EnableCors("AllowAllHeaders")]
-        public AddMemberResponse Update([FromForm] String memberData)
+        public AddMemberResponse Update(Attendance attend)
         {
             AddMemberResponse response = new AddMemberResponse();
-            Attendance member = JsonConvert.DeserializeObject<Attendance>(memberData);
-            if (!MemberExists(member.Id))
+            //Attendance member = JsonConvert.DeserializeObject<Attendance>(memberData);
+            if (!MemberExists(attend.MemberId))
             {
                 response.Status = false;
                 response.Message = "Member does not exist.";
                 response.MemberId = -1;
                 return response;
             }
-            if (member.Status)
+            if (attend.Status!=null)
             {
-                _context.Entry(member).Property(x => x.Status).IsModified = true;
+                _context.Entry(attend).Property(x => x.Status).IsModified = true;
             }
-            else
+            else if (attend.MemberId != null)
             {
-                _context.Entry(member).Property(x => x.Status).IsModified = true;
+                _context.Entry(attend).Property(x => x.MemberId).IsModified = true;
             }
-            if (member.EventDate != null)
+            else if (attend.EventDate != null)
             {
-                _context.Entry(member).Property(x => x.EventDate).IsModified = true;
+                _context.Entry(attend).Property(x => x.EventDate).IsModified =true;
             }
             try
             {
                 _context.SaveChanges();
                 response.Status = true;
                 response.Message = "Updated successfully.";
-                response.MemberId = -1;
+                response.MemberId = attend.MemberId;
                 return response;
             }
-            catch (DbUpdateConcurrencyException)
-            {
+            catch (DbUpdateConcurrencyException) {             
                 response.Status = false;
                 response.Message = "Update failed.";
                 response.MemberId = -1;

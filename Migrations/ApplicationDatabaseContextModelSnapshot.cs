@@ -29,6 +29,9 @@ namespace ChurchDatabaseAPI.Migrations
                     b.Property<string>("EventDate")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
@@ -114,7 +117,7 @@ namespace ChurchDatabaseAPI.Migrations
                     b.ToTable("Mail");
                 });
 
-            modelBuilder.Entity("ChurchDatabaseAPI.Model.Membership", b =>
+            modelBuilder.Entity("ChurchDatabaseAPI.Model.MemberRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -243,12 +246,12 @@ namespace ChurchDatabaseAPI.Migrations
 
             modelBuilder.Entity("ChurchDatabaseAPI.Model.Image", b =>
                 {
-                    b.HasOne("ChurchDatabaseAPI.Model.Membership", "Membership")
+                    b.HasOne("ChurchDatabaseAPI.Model.MemberRequest", "Membership")
                         .WithMany()
                         .HasForeignKey("ImageForeignKey");
                 });
 
-            modelBuilder.Entity("ChurchDatabaseAPI.Model.Membership", b =>
+            modelBuilder.Entity("ChurchDatabaseAPI.Model.MemberRequest", b =>
                 {
                     b.HasOne("ChurchDatabaseAPI.Model.Image", "Image")
                         .WithMany()

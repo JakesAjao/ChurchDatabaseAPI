@@ -155,3 +155,5 @@ C:\Projects\ChurchDatabaseAPI\obj\MCD\Debug\netcoreapp3.1\ChurchDatabaseAPI.cspr
 C:\Projects\ChurchDatabaseAPI\obj\MCD\Debug\netcoreapp3.1\ChurchDatabaseAPI.dll
 C:\Projects\ChurchDatabaseAPI\obj\MCD\Debug\netcoreapp3.1\ChurchDatabaseAPI.pdb
 C:\Projects\ChurchDatabaseAPI\obj\MCD\Debug\netcoreapp3.1\ChurchDatabaseAPI.genruntimeconfig.cache
+C:\Projects\ChurchDatabaseAPI\bin\MCD\Debug\netcoreapp3.1\System.Net.Http.Formatting.dll
+C:\Projects\ChurchDatabaseAPI\bin\MCD\Debug\netcoreapp3.1\System.Web.Http.dll
